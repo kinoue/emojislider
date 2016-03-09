@@ -1,10 +1,11 @@
-var gColorRed = "#CF0F0F"
-var gColorYellow = "#fcc21b"
-var gColorDarkYellow = "#f0a20b"
+var gColorRed = "#CF0F0F";
+var gColorYellow = "#fcc21b";
+var gColorBlue = "#3764d5"; // "#095595";
+var gColorDarkYellow = "#f0a20b";
 var gColorBrown = "#463502";
 var gColorTear = '#77CCEE';
 
-var gEmojiCenterX = 300;
+var gEmojiCenterX = 240;
 var gEmojiCenterY = 150;
 var gEmojiR = 125;
 
@@ -13,17 +14,23 @@ var gEmojiEyeWidth = gEmojiEyeHeight * 2 / 3;
 
 var gLineWidth = 7;
 
-function draw_emoji(id, joy, sad, angry) 
+function draw_emoji(id, joy, anger) 
 {
-	sad = Math.min(sad, 75);
-
 	var c=document.getElementById(id);
 	var ctx=c.getContext("2d");
 	ctx.beginPath();
 
-	if (angry > 75)
+	if (anger > 75)
 	{
 		ctx.fillStyle = gColorRed;
+	}
+	else if (anger < -75)
+	{
+		var blueGradient = ctx.createLinearGradient(0, 0, 0, gEmojiR * 2);
+		blueGradient.addColorStop(0, gColorBlue);
+		blueGradient.addColorStop(1, gColorYellow);
+//		ctx.fillStyle = gColorBlue;
+		ctx.fillStyle = blueGradient;
 	}
 	else 
 	{
@@ -35,24 +42,26 @@ function draw_emoji(id, joy, sad, angry)
 
 	ctx.fillStyle = gColorBrown;
 	draw_eyes(ctx);
-	draw_eyebrows(ctx, angry);
-	if (angry > 0) {
-		draw_angry_lip(ctx, angry);
+
+	draw_eyebrows(ctx, anger);
+
+	if (anger != 0) 
+	{
+		draw_angry_lips(ctx, anger);
 	}
 	else 
 	{
-		lips(ctx, sad, joy);
+		draw_joyful_lips(ctx, joy);
 	}
 
-
-	if (joy >= 75)
-	{ 
-//		lips(ctx, sad, joy / 4);
-	}
-
-	if (sad >= 75)
+	if (joy <= -75)
 	{
 		draw_tear(ctx);
+	}
+
+	if (anger <= -75)
+	{
+		draw_sweat(ctx);
 	}
 }
 
@@ -72,43 +81,52 @@ function draw_eyes(ctx)
 	ctx.restore();
 }
 
-function draw_tear(ctx)
+function draw_drop(ctx, x, y)
 {
-	var x = gEmojiCenterX - gEmojiR * 2 / 5 - gEmojiEyeWidth;
-	var y = gEmojiCenterY;
 	var height = gEmojiEyeHeight * 2;
-
 	var arc = gEmojiR / 7;
 
 	ctx.beginPath();
   ctx.lineJoin = 'miter';
   ctx.moveTo(x, y);
-
-    // ctx.quadraticCurveTo(117.5, 30, 148, 68);
-
   ctx.arc(x, y + height, arc, 5.75, 3.66, false);
-
-    // ctx.quadraticCurveTo(117.5, 35, 120, 20);
-
   ctx.closePath();
   ctx.lineWidth = 0;
   ctx.fillStyle = gColorTear;
   ctx.fill();
 }
 
-function draw_eyebrows(ctx, up)
+function draw_sweat(ctx)
 {
-	if (up > 10) {
-		var upOffset = gEmojiR * up / 5 / 100;
+	var x = gEmojiCenterX - gEmojiR * 4 / 5;
+	var y = gEmojiCenterY - gEmojiEyeHeight;
+
+	draw_drop(ctx, x, y);
+}
+
+
+function draw_tear(ctx)
+{
+	var x = gEmojiCenterX - gEmojiR * 2 / 5 - gEmojiEyeWidth;
+	var y = gEmojiCenterY;
+
+	draw_drop(ctx, x, y);
+}
+
+function draw_eyebrows(ctx, anger)
+{
+	if (anger > 10 || anger < -10) {
+
+		var offset = gEmojiR * anger / 5 / 100;
 
 		var startX1 = gEmojiCenterX - gEmojiR / 5;
-		var startY1 = gEmojiCenterY - gEmojiR / 3;
+		var startY1 = gEmojiCenterY - gEmojiR / 2.5 + offset;
 
 		var endX1 = startX1 - gEmojiR * 2 / 5;
-		var endY1 = gEmojiCenterY - gEmojiR / 3 - upOffset;
+		var endY1 = gEmojiCenterY - gEmojiR / 2.5;
 
 		var startX2 = gEmojiCenterX + gEmojiR / 5;
-		var startY2 = gEmojiCenterY - gEmojiR / 3;
+		var startY2 = startY1;
 
 		var endX2 = startX2 + gEmojiR * 2 / 5;
 		var endY2 = endY1;
@@ -134,24 +152,39 @@ function draw_eyebrows(ctx, up)
 	}
 }
 
-function draw_angry_lip(ctx, angry)
+function draw_angry_lips(ctx, anger)
 {
+	console.log("draw_angry_lips with anger: ", anger);
 	ctx.save();
 	ctx.beginPath();
 
-	var xOffset = (100 - angry) * gEmojiR * 3 / 5 / 100;
+	var offset = anger * gEmojiR * 3 / 5 / 100;
+	console.log("offset: ", offset);
+
+	console.log("offset: ", offset);
+
+	var xOffset = 0;
 	var yOffset = 0;
 
-	xOffset = Math.max(xOffset, gEmojiR / 5); 
+	if (offset > 0)
+	{
+		xOffset = offset;
+		xOffset = Math.min(xOffset, gEmojiR / 5); 
+	}
+	else
+	{
+		yOffset = offset;
+		yOffset = Math.max(yOffset, - gEmojiR / 5); 
+	}
 
-	var startX = gEmojiCenterX - xOffset;
-	var startY = gEmojiCenterY + gEmojiR * 2 / 5;
+	var startX = gEmojiCenterX - gEmojiR * 2 / 5 + xOffset;
+	var startY = gEmojiCenterY + gEmojiR * 2 / 5 - yOffset;
 
-	var endX = gEmojiCenterX + xOffset;
+	var endX = gEmojiCenterX + gEmojiR * 2 / 5 - xOffset;
 	var endY = startY;
 
 	var arcX = gEmojiCenterX;
-	var arcY = gEmojiCenterY;
+	var arcY = gEmojiCenterY + yOffset;
 
 	console.log("start: ", startX, startY);
 	console.log("end:   ", endX, endY);	
@@ -163,33 +196,56 @@ function draw_angry_lip(ctx, angry)
 	ctx.moveTo(startX, startY);
 	ctx.lineWidth = gLineWidth;
 	ctx.lineCap = 'round';
+	ctx.lineJoin = 'round';
 	ctx.strokeStyle = gColorBrown;
 
   ctx.quadraticCurveTo(arcX, arcY, endX, endY);
+
+   if (anger < 0)
+  {
+  	var arc2X = gEmojiCenterX;
+  	var arc2Y = startY - gEmojiR / 20;
+
+//  	ctx.lineTo(startX, startY);
+ 	  ctx.quadraticCurveTo(arc2X, arc2Y, startX, startY);
+ 		ctx.fillStyle = gColorDarkYellow;
+  	ctx.fill();
+  }
 
   ctx.stroke();
   ctx.closePath();
   ctx.restore();
 }
 
-
-
-function lips(ctx, down, up)
+function draw_joyful_lips(ctx, joy)
 {
+	console.log("draw_joyful_lips with joy: ", joy);
 	ctx.save();
 	ctx.beginPath();
 
-	var downOffset = (down * gEmojiR + 0.0) / 3 / 100;
-	var upOffset = (up * gEmojiR + 0.0) / 2 / 100;
+	var offset = (joy * gEmojiR + 0.0) / 3 / 100;
+	console.log("offset: ", offset);
 
 	var startX = gEmojiCenterX - gEmojiR * 3 / 5;
-	var startY = gEmojiCenterY + gEmojiR * 2 / 5 + downOffset;
+	var startY = gEmojiCenterY + gEmojiR * 2 / 5;
+
+	var arcX1 = startX + gEmojiR / 5;
+	var arcY1 = gEmojiCenterY + gEmojiR * 2 / 5;
+
+	if (offset > 0)
+	{
+		offset *= 1.5;
+		arcY1 += offset;
+	}
+	else
+	{
+		offset *= 0.75;
+		startY -= offset;
+	}
+
 
 	var endX = gEmojiCenterX + gEmojiR * 3 / 5;
 	var endY = startY;
-
-	var arcX1 = startX + gEmojiR / 5;
-	var arcY1 = gEmojiCenterY + gEmojiR * 2 / 5 + upOffset;
 
 	var arcX2 = endX - gEmojiR / 5;
 	var arcY2 = arcY1;
@@ -199,9 +255,7 @@ function lips(ctx, down, up)
 	console.log("arc1: ", arcX1, arcY1);
 	console.log("arc2: ", arcX2, arcY2);	
 
-	console.log("downOffset: ", downOffset);
-	console.log("upOffset: ", upOffset);
-	console.log("up: ", up);
+	console.log("offset: ", offset);
 
 	ctx.moveTo(startX, startY);
 	ctx.lineWidth = gLineWidth;
@@ -210,7 +264,8 @@ function lips(ctx, down, up)
 	ctx.strokeStyle = gColorBrown;
 
   ctx.bezierCurveTo(arcX1, arcY1, arcX2, arcY2, endX, endY);
-  if (up > 75)
+
+  if (joy > 75)
   {
   	ctx.lineTo(startX, startY);
  		ctx.fillStyle = gColorDarkYellow;
@@ -223,16 +278,15 @@ function lips(ctx, down, up)
   ctx.restore();
 }
 
-function ellipse(context, cx, cy, rx, ry)
+function ellipse(ctx, cx, cy, rx, ry)
 {
-        context.save(); // save state
-        context.strokeStyle = null;
-        context.beginPath();
-        context.translate(cx-rx, cy-ry);
-        context.scale(rx, ry);
-        context.arc(1, 1, 1, 0, 2 * Math.PI, false);
-        context.fill();  
-        context.closePath();      
-        context.restore(); // restore to original state
-
-      }		
+  ctx.save();
+  ctx.strokeStyle = null;
+  ctx.beginPath();
+  ctx.translate(cx-rx, cy-ry);
+  ctx.scale(rx, ry);
+  ctx.arc(1, 1, 1, 0, 2 * Math.PI, false);
+  ctx.fill();  
+  ctx.closePath();      
+  ctx.restore();
+}		

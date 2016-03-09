@@ -3,42 +3,41 @@
   <link rel="stylesheet" href="https://code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
   <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
   <script src="https://code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
-	<style>
-	</style>
+
+	<!--link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous" -->
 	<script src="emoji.js"></script>
   <link rel="stylesheet" href="emoji.css">
 </head>
 <body>
-	<canvas id="myCanvas" width="600" height="300"></canvas>
-	<div>
-		Like: 
-		<div id="slider-happy">
+	<div style="width: 480px; overflow: auto;">
+		<canvas id="myCanvas" width="480" height="300"></canvas>
 	</div>
-	<div>
-		Sad: 
-		<div id="slider"></div>
+	<br />
+	<br />
+	<div style="width: 480px; overflow: auto;">
+			<div style="float: left;">Sad</div>
+			<div style="float: right;">Happy</div>
 	</div>
-	<div>
-		Angry: 
+	<div style="width: 440px; height: 60px; overflow: auto; padding: 20px;">
+		  <div style="margin-left: auto; margin-right: auto;" id="slider-joy-sadness"></div>
+	</div>
+	<div style="width: 480px; overflow: auto;">
+		<div style="float: left;">Fearful</div>
+		<div style="float: right; position: relative;">Angry</div>
+	</div>
+	<div style="width: 440px; height: 60px; overflow: auto; padding: 20px;">		
 		<div id="slider-angry"></div>	
 	</div>
 <script>
   $(function() {
  		draw_emoji("myCanvas", 0, 0);
 
-    $("#slider").slider(
+    $("#slider-joy-sadness").slider(
         { 
+        	max: 100,
+        	min: -100,
           slide: function(event, ui) {
-            console.log("Value Changed: ", ui.value);
-            draw_emoji("myCanvas", 0, ui.value)
-          }
-        }
-      );
-
-    $("#slider-happy").slider(
-        { 
-          slide: function(event, ui) {
-            console.log("Happiness: ", ui.value);
+            console.log("Joy/Sadness: ", ui.value);
             draw_emoji("myCanvas", ui.value, 0)
           }
         }
@@ -46,9 +45,11 @@
 
     $("#slider-angry").slider(
       { 
+       	max: 100,
+       	min: -100,
         slide: function(event, ui) {
           console.log("angry: ", ui.value);
-          draw_emoji("myCanvas", 0, 0, ui.value)
+          draw_emoji("myCanvas", 0, ui.value)
         }
       }
     );
