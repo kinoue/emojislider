@@ -115,8 +115,8 @@ function draw_tear(ctx)
 
 function draw_eyebrows(ctx, anger)
 {
-	if (anger > 10 || anger < -10) {
-
+	if (anger != 0) 
+  {
 		var offset = gEmojiR * anger / 5 / 100;
 
 		var startX1 = gEmojiCenterX - gEmojiR / 5;
@@ -166,7 +166,7 @@ function draw_angry_lips(ctx, anger)
 	var xOffset = 0;
 	var yOffset = 0;
 
-	if (offset > 0)
+	if (anger > 0)
 	{
 		xOffset = offset;
 		xOffset = Math.min(xOffset, gEmojiR / 5); 
@@ -184,7 +184,16 @@ function draw_angry_lips(ctx, anger)
 	var endY = startY;
 
 	var arcX = gEmojiCenterX;
-	var arcY = gEmojiCenterY + yOffset;
+
+	if (anger > 0)
+	{
+		var arcY = startY - xOffset;
+	}
+	else
+	{
+		var arcY = startY + yOffset * 3;
+	}
+
 
 	console.log("start: ", startX, startY);
 	console.log("end:   ", endX, endY);	
@@ -205,8 +214,6 @@ function draw_angry_lips(ctx, anger)
   {
   	var arc2X = gEmojiCenterX;
   	var arc2Y = startY - gEmojiR / 20;
-
-//  	ctx.lineTo(startX, startY);
  	  ctx.quadraticCurveTo(arc2X, arc2Y, startX, startY);
  		ctx.fillStyle = gColorDarkYellow;
   	ctx.fill();
