@@ -1,0 +1,58 @@
+<html>
+<head>
+  <link rel="stylesheet" href="https://code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+  <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+  <script src="https://code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+	<style>
+	</style>
+	<script src="emoji.js"></script>
+  <link rel="stylesheet" href="emoji.css">
+</head>
+<body>
+	<canvas id="myCanvas" width="600" height="300"></canvas>
+	<div>
+		Like: 
+		<div id="slider-happy">
+	</div>
+	<div>
+		Sad: 
+		<div id="slider"></div>
+	</div>
+	<div>
+		Angry: 
+		<div id="slider-angry"></div>	
+	</div>
+<script>
+  $(function() {
+ 		draw_emoji("myCanvas", 0, 0);
+
+    $("#slider").slider(
+        { 
+          slide: function(event, ui) {
+            console.log("Value Changed: ", ui.value);
+            draw_emoji("myCanvas", 0, ui.value)
+          }
+        }
+      );
+
+    $("#slider-happy").slider(
+        { 
+          slide: function(event, ui) {
+            console.log("Happiness: ", ui.value);
+            draw_emoji("myCanvas", ui.value, 0)
+          }
+        }
+      );
+
+    $("#slider-angry").slider(
+      { 
+        slide: function(event, ui) {
+          console.log("angry: ", ui.value);
+          draw_emoji("myCanvas", 0, 0, ui.value)
+        }
+      }
+    );
+  });
+</script>
+</body>
+</html>

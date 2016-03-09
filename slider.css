@@ -1,0 +1,29 @@
+.slider-wrapper {
+  margin: 50px; }
+
+.slider-bar {
+  position: relative;
+  width: 100px;
+  height: 10px;
+  border: 3px solid silver;
+  border-radius: 5px;
+  cursor: pointer; }
+
+.slider-bar .slider-slider {
+  position: absolute;
+  width: 0%;
+  height: 100%;
+  border-radius: 5px;
+  border: 3px solid silver;
+  background-color: #fcc21b;
+  top: -3px;
+  left: -3px; }
+
+.slider-bar .slider-slider .slider-toggle {
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  top: -3px;
+  right: -10px;
+  background-color: grey;
+  border-radius: 10px; }

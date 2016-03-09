@@ -1,0 +1,19 @@
+<html>
+<head>
+	<link rel="stylesheet" type="text/css" href="slider.css">
+    <script src="slider.js"></script>
+</head>
+<body>
+<div class="slider-wrapper">
+	<div id="slider"></div>
+<div>
+</body>
+<script>
+  var bar = new Slider({
+        container: 'slider',
+        value: 0.7,
+        onChange: function(value){
+            console.log(value);
+        }
+    });
+</script>
